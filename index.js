@@ -47,17 +47,35 @@ app.get("/movies/read", (req, res) => {
 })
 app.get("/movies/read/by-date", (req, res) => {
     res.send(
-        { status: 200, data: movies.sort( (a,b) => { return a.year - b.year}) })
-    
+        { status: 200, data: movies.sort((a, b) => { return a.year - b.year }) })
+
 })
 app.get("/movies/read/by-rating", (req, res) => {
     res.send(
-        { status: 200, data: movies.sort( (a,b) => { return a.rating - b.rating}).reverse() })
-    
+        { status: 200, data: movies.sort((a, b) => { return a.rating - b.rating }).reverse() })
+
 })
 app.get("/movies/read/by-title", (req, res) => {
     res.send(
-        { status: 200, data: movies.sort( (a,b) => { return a.title > b.title ? 1 :((b.title > a.title) ? -1 :0)}) })
-    })
+        { status: 200, data: movies.sort((a, b) => { return a.title > b.title ? 1 : ((b.title > a.title) ? -1 : 0) }) })
+})
+
+app.get("/movies/read/id/:id", (req, res) => {
+    if (req.params.id > movies.length || req.params.id > movies.length) {
+        res.send({ status: 404, error: true, message: `the movie ${req.params.id} does not exist` })
+        res.statusCode = 404;
+        console.log(res.statusCode)
+    }
+
+    else {
+        for (let i = 0; i < movies.length; i++) {
+            if (req.params.id == i + 1) {
+                res.send({ status: 200, data: movies[i] })
+            }
+        }
+    }
+})
+
+
 app.get("/movies/update", (req, res) => { res.send('update') })
 app.get("/movies/delete", (req, res) => { res.send('delete') })
