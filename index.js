@@ -98,9 +98,9 @@ app.get("/movies/add", (req, res) => {
 
 
 app.get("/movies/delete", (req, res) => { res.send('delete') })
-app.get("/movies/delete/:id", (req, res) => { 
-    
-    
+app.get("/movies/delete/:id", (req, res) => {
+
+
     if (req.params.id > movies.length || req.params.id > movies.length) {
         res.send({ status: 404, error: true, message: `the movie ${req.params.id} does not exist` })
         res.statusCode = 404;
@@ -110,12 +110,58 @@ app.get("/movies/delete/:id", (req, res) => {
     else {
         for (let i = 0; i < movies.length; i++) {
             if (req.params.id == i + 1) {
-                movies.splice(i,1)
-                res.send({ status: 200, data: movies})
+                movies.splice(i, 1)
+                res.send({ status: 200, data: movies })
             }
         }
-    }})
+    }
+})
 
 
 
 app.get("/movies/update", (req, res) => { res.send('update') })
+app.get("/movies/update/:id", (req, res) => {
+    let title = req.query.title;
+    let year = req.query.year;
+    let rating = req.query.rating;
+    if (req.params.id <= movies.length || req.params.id > 0) {
+    if (title != "" && year != "" && title != undefined && year != 0 && year != undefined && rating != undefined && year.length == 4 && !isNaN(year)) {
+        var obj = { "title": title, "year": year, "rating": rating }
+    }
+    else if (title == undefined) {
+        var obj = { "title": movies[req.params.id - 1].title, "year": year, "rating": rating }
+        if (year == undefined) {
+            var obj = { "title": movies[req.params.id - 1].title, "year": movies[req.params.id - 1].year, "rating": rating }
+        }
+        if (rating == undefined) {
+            var obj = { "title": movies[req.params.id - 1].title, "year": year, "rating": movies[req.params.id - 1].rating }
+        }
+    }
+    else if (year == undefined) {
+        var obj = { "title": title, "year": movies[req.params.id - 1].year, "rating": rating }
+        if (title == undefined) {
+            var obj = { "title": movies[req.params.id - 1].title, "year": movies[req.params.id - 1].year, "rating": rating }
+        }
+        if (rating == undefined) {
+            var obj = { "title": title, "year": movies[req.params.id - 1].year, "rating": movies[req.params.id - 1].rating }
+        }
+    }
+    else if (rating == undefined) {
+        var obj = { "title": title, "year": year, "rating": movies[req.params.id - 1].rating }
+        if (title == undefined) {
+            var obj = { "title": movies[req.params.id - 1].title, "year": year, "rating": movies[req.params.id - 1].rating }
+        }
+        if (year == undefined) {
+            var obj = { "title": title, "year": movies[req.params.id - 1].year, "rating": movies[req.params.id - 1].rating }
+        }
+    }
+    movies[req.params.id - 1] = obj
+    res.send(movies)
+    console.log(movies)
+    }
+    else {
+        res.statusCode = 403;
+        res.send({ status: 403, error: true, message: `the movie ${req.params.id} does not exist` })
+    }
+}
+)
