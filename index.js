@@ -40,7 +40,7 @@ app.get('/search', (req, res) => {
 
 })
 
-app.get("/movies/create", (req, res) => { res.send('create') })
+
 app.get("/movies/read", (req, res) => {
     res.send(
         { status: 200, data: movies })
@@ -76,6 +76,25 @@ app.get("/movies/read/id/:id", (req, res) => {
     }
 })
 
+app.get("/movies/create", (req, res) => { res.send('create') })
+app.get("/movies/add", (req, res) => {
+    let title = req.query.title;
+    let year = req.query.year;
+    let rating = req.query.rating;
+    if (title != "" && year != "" && title != undefined && year != 0 && year != undefined && year.length == 4 && !isNaN(year)) {
+        if (rating != "") {
+            var obj = { "title": title, "year": year, "rating": rating }
+        }
+        else { var obj = { "title": title, "year": year, "rating": rating = 4 } }
+        movies.push(obj)
+        res.send(movies)
+        console.log(movies)
+    }
+    else {
+        res.statusCode = 403;
+        res.send({ status: 403, error: true, message: `you cannot create a movie without providing a title and a year` })
+    }
+})
 
 app.get("/movies/update", (req, res) => { res.send('update') })
 app.get("/movies/delete", (req, res) => { res.send('delete') })
