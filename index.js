@@ -96,5 +96,26 @@ app.get("/movies/add", (req, res) => {
     }
 })
 
-app.get("/movies/update", (req, res) => { res.send('update') })
+
 app.get("/movies/delete", (req, res) => { res.send('delete') })
+app.get("/movies/delete/:id", (req, res) => { 
+    
+    
+    if (req.params.id > movies.length || req.params.id > movies.length) {
+        res.send({ status: 404, error: true, message: `the movie ${req.params.id} does not exist` })
+        res.statusCode = 404;
+        console.log(res.statusCode)
+    }
+
+    else {
+        for (let i = 0; i < movies.length; i++) {
+            if (req.params.id == i + 1) {
+                movies.splice(i,1)
+                res.send({ status: 200, data: movies})
+            }
+        }
+    }})
+
+
+
+app.get("/movies/update", (req, res) => { res.send('update') })
