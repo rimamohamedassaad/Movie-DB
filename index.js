@@ -1,17 +1,23 @@
 const express = require("express");
 const res = require("express/lib/response");
-const app = express()
+const bodyParser = require("body-parser");
+const app = express();
 const port = 3000;
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json())
+const cors = require('cors');
+
 var date = new Date();
 var hour = date.getHours();
 var min = date.getMinutes();
+
 const movies = [
     { title: 'Jaws', year: 1975, rating: 8 },
     { title: 'Avatar', year: 2009, rating: 7.8 },
     { title: 'Brazil', year: 1985, rating: 8 },
     { title: 'الإرهاب والكباب‎', year: 1992, rating: 6.2 }
 ]
-app.listen(port, () => console.log(`server is running on http://127.0.0.1:${port}`))
+app.use(cors());
 app.get("/", (req, res) => { res.send(`ok`) })
 app.get("/test", (req, res) => { return res.send({ status: 200, message: `ok` }) })
 app.get("/time", (req, res) => {
@@ -77,7 +83,7 @@ app.get("/movies/read/id/:id", (req, res) => {
 })
 
 app.get("/movies/create", (req, res) => { res.send('create') })
-app.get("/movies/add", (req, res) => {
+app.post("/movies/add", (req, res) => {
     let title = req.query.title;
     let year = req.query.year;
     let rating = req.query.rating;
@@ -98,7 +104,7 @@ app.get("/movies/add", (req, res) => {
 
 
 app.get("/movies/delete", (req, res) => { res.send('delete') })
-app.get("/movies/delete/:id", (req, res) => {
+app.delete("/movies/delete/:id", (req, res) => {
 
 
     if (req.params.id > movies.length || req.params.id > movies.length) {
@@ -120,7 +126,7 @@ app.get("/movies/delete/:id", (req, res) => {
 
 
 app.get("/movies/update", (req, res) => { res.send('update') })
-app.get("/movies/update/:id", (req, res) => {
+app.patch("/movies/update/:id", (req, res) => {
     let title = req.query.title;
     let year = req.query.year;
     let rating = req.query.rating;
@@ -165,3 +171,4 @@ app.get("/movies/update/:id", (req, res) => {
     }
 }
 )
+app.listen(port, () => console.log(`server is running on http://127.0.0.1:${port}`))
