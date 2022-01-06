@@ -1,28 +1,32 @@
 const express = require("express");
-const res = require("express/lib/response");
-//const {authUser, authuser} = require('./midellware')
 const bodyParser = require("body-parser");
 const app = express();
-//const port = 3000;
 const mongoose = require('mongoose');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 app.use(express.json());
-const cors = require('cors');
-const Joi = require("joi");
+require('dotenv').config()
+//connection
 
-
-mongoose.connect(`mongodb+srv://rimaassaad:rimaassaad123@cluster0.eubn2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`);
-//mongoose.set('useCreateIndex',true);
-var date = new Date();
-var hour = date.getHours();
-var min = date.getMinutes();
+    const { MongoClient } = require('mongodb');
+    const uri = process.env.DBCONNECTION;
+    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    client.connect(err => {
+      const collection = client.db("test").collection("devices");
+      // perform actions on the collection object
+      client.close();
+    });
+    mongoose.connect(uri,{useNewUrlParser:true} , err => {
+        if (err) throw err;
+        console.log("connected successfully")});
+//movies schema 
 const movieSchema = new mongoose.Schema({
     movieslist: [{ title: String, year: Number, rating: Number }],
 });
-const moviesDB = mongoose.model("movies", movieSchema);
+//movies DB
+const MoviesDB = mongoose.model("movies", movieSchema);
 
-const movies = new moviesDB({
+const movies = new MoviesDB({
     movieslist: [
         { title: "Jaws", year: 1975, rating: 8 },
         { title: "Avatar", year: 2009, rating: 7.8 },
@@ -30,11 +34,13 @@ const movies = new moviesDB({
         { title: "الإرهاب والكباب‎", year: 1992, rating: 6.2 },
     ],
 });
+//USER schema 
 const userSchema = new mongoose.Schema({
     userslist: [{ username: String, password: String ,role : String}],
 });
-const usersDB = mongoose.model("users", userSchema);
-const users = new usersDB({
+// USER DB
+const UsersDB = mongoose.model("users", userSchema);
+const users = new UsersDB({
     userslist: [
         { username: "rimaassaad", password: "rimaassaad123" ,role: "admin" },
         { username: "karim", password: "karim123" ,role: "users" },
@@ -88,8 +94,9 @@ app.delete("/users/delete/:id",authuser(["rimaassaad"]),(req, res) => {
 
             }
         }
-    }
-})
+    } 
+}) 
+//authenticated user admin 
 function authuser(permission){
     return (req,res,next) => {
 const userRole = req.body.role;
@@ -101,6 +108,10 @@ else {
     }
 }
 
+//movies 
+var date = new Date();
+var hour = date.getHours();
+var min = date.getMinutes();
 app.get("/", (req, res) => { res.send(`ok`) })
 app.get("/test", (req, res) => { return res.send({ status: 200, message: `ok` }) })
 app.get("/time", (req, res) => {
@@ -129,7 +140,7 @@ app.get('/search', (req, res) => {
 
 })
 
-
+//CRUD FOR MOVIES
 app.get("/movies/read",(req, res) => {
     res.send(
         { status: 200, data: movies.movieslist })
